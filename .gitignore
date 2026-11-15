@@ -1,0 +1,7 @@
+.local-tools/
+tmp/
+resultados/
+output/
+*.test
+*.exe
+*.out

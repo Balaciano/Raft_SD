@@ -1,0 +1,30 @@
+{
+  "repositorio": "https://github.com/BU-CS451-DS/goals-2018",
+  "commit": "720120c7f02a9ec1c1221d26c465b4ebc163f014",
+  "arquivos": [
+    {
+      "path": "src/raft/config.go",
+      "git_blob_sha1": "fdecba0f78caf737bf4064ad1f92ff4c8f470017"
+    },
+    {
+      "path": "src/raft/persister.go",
+      "git_blob_sha1": "379d8b9309ad2de628a2299fb8178e3aa35d862a"
+    },
+    {
+      "path": "src/raft/test_test.go",
+      "git_blob_sha1": "b9905c9c269ea3c84aea7131f2930809e771982d"
+    },
+    {
+      "path": "src/raft/util.go",
+      "git_blob_sha1": "d77e71fa5a792b03d19af30f550b39670b9ba4ba"
+    },
+    {
+      "path": "src/labrpc/labrpc.go",
+      "git_blob_sha1": "0fa1783465d90d3b7949e056c344611ef33c64e3"
+    },
+    {
+      "path": "src/labrpc/test_test.go",
+      "git_blob_sha1": "9e5c59141f61168534dc8ad0c4c24b1b1a4e382b"
+    }
+  ]
+}
