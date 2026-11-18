@@ -1,106 +1,47 @@
-# Trabalho de Sistemas Distribuídos: Raft 2A
+# Raft — Parte 2A (Sistemas Distribuídos)
 
-Implementação em Go de **eleição de líder e heartbeats**, conforme a seção
-“Tarefa” do PDF `Trabalho Raft-Sem2026-2.pdf` (p. 5-7).
+Implementação em Go da eleição de líder e dos heartbeats do Raft, conforme a parte 2A do laboratório.
 
-O código está escrito; **compilação, testes Go e detector de corridas precisam
-ser executados**. Go não foi encontrado no ambiente de preparação. Os resultados
-no relatório estão marcados **FALTA COMPLETAR**.
+**Integrantes:** Eduardo Osborne, João Pedro Balaciano e Rafaela Fiuza
 
-## Arquivos
+## Estrutura
 
-- `src/raft/raft.go`: solução 2A, com comentários sobre as regras.
-- `src/raft/election_extra_test.go`: onze testes adicionais.
-- `src/raft/test_test.go`: testes oficiais, incluindo partes futuras.
-- `src/labrpc/`: RPC original, sem alterações.
-- `docs/RELATORIO.md`: relatório editável com os itens obrigatórios.
-- `docs/REQUISITOS.md`: interpretação e mapa dos requisitos.
-- `docs/RESULTADOS.md`: ficha de resultados e procedimentos de medição.
-- `docs/ROTEIRO_APRESENTACAO.md`: explicação para estudo e apresentação.
-- `scripts/testar.ps1` e `scripts/testar.sh`: testes com registro dos logs.
-- `scripts/verificar_base.py`: verificação dos arquivos oficiais.
+| Caminho | Conteúdo |
+| --- | --- |
+| `src/raft/raft.go` | Nossa implementação da parte 2A |
+| `src/raft/election_extra_test.go` | 11 testes adicionais escritos pelo grupo |
+| `src/raft/test_test.go`, `config.go`, `persister.go`, `util.go` | Arquivos fornecidos, sem alteração |
+| `src/labrpc/` | Biblioteca de RPC fornecida, sem alteração |
+| `scripts/testar.sh` | Executa os testes 2A no macOS/Linux e salva os logs em `resultados/` |
+| `scripts/testar.ps1` | Mesmo script para Windows (PowerShell) |
+| `scripts/verificar_base.py` | Confere se os arquivos fornecidos estão idênticos aos originais |
+| `scripts/empacotar.py` | Gera um `.zip` com o código, os scripts e a documentação |
+| `docs/RELATORIO.md` | Relatório do trabalho |
 
-## Windows / PowerShell
+## Como testar
 
-Instale Go, confirme `go version` e abra o terminal na raiz do projeto:
-
-```powershell
-.\scripts\testar.ps1
-.\scripts\testar.ps1 -Repeticoes 20
-.\scripts\testar.ps1 -Race -Repeticoes 5
-```
-
-Se a política local bloquear scripts, use diretamente:
-
-```powershell
-$env:GOPATH = (Get-Location).Path
-$env:GO111MODULE = 'off'
-go test -v -run 2A -count=1 raft
-go test -run 2A -count=20 raft
-go test -race -run 2A -count=5 raft
-```
-
-`-race` requer suporte a CGO e compilador C compatível. Se esse suporte não
-estiver configurado no Windows, execute no Linux/WSL com Go e compilador C
-instalados. Falhar ao configurar o detector não equivale a passar sem corridas.
-
-## Linux / WSL
-
-No WSL, prefira extrair o projeto em uma pasta do sistema Linux. Na raiz:
+Requisito: Go instalado (`go version` deve funcionar). Na raiz do projeto:
 
 ```bash
-bash scripts/testar.sh
-bash scripts/testar.sh 20
-bash scripts/testar.sh 5 race
+bash scripts/testar.sh            # testes 2A uma vez
+bash scripts/testar.sh 20         # 20 repetições
+bash scripts/testar.sh 5 race     # detector de corridas, 5 repetições
 ```
 
-Alternativa manual, preservando o modelo GOPATH do laboratório:
+O script define `GOPATH` na raiz do projeto e `GO111MODULE=off`, necessários porque o código-base usa o modo GOPATH. Para rodar sem o script:
 
 ```bash
-export GOPATH="$PWD"
-export GO111MODULE=off
-go test -v -run 2A -count=1 raft
-go test -race -run 2A -count=5 raft
+export GOPATH="$PWD" GO111MODULE=off
+go test -v -run 2A raft
+go test -race -run 2A raft
 ```
 
-Os scripts gravam a versão de Go e as saídas em `resultados/`. `-count` evita
-reaproveitar resultados do cache.
+No Windows, use `.\scripts\testar.ps1`, `.\scripts\testar.ps1 -Repeticoes 20` e `.\scripts\testar.ps1 -Race -Repeticoes 5`.
+
+## Resultados
+
+Em um MacBook Air (Apple M1, Go 1.27.4), todas as 26 rodadas da suíte 2A passaram, incluindo 5 com `-race`, sem corridas de dados. A reeleição levou no máximo 1,442 s (limite de 5 s) e a taxa de heartbeats ficou entre 7,5 e 8,0 por segundo (limite de 10). Detalhes em `docs/RELATORIO.md`.
 
 ## Escopo
 
-São mantidas as assinaturas `Make`, `GetState`, `Start`, `Kill` e `ApplyMsg`.
-`Start` retorna índice `-1`, termo atual e indicação de liderança; não anexa,
-replica ou confirma comandos nesta etapa. `applyCh` e `Persister` permanecem
-na API, mas não são usados pela parte 2A.
-
-**2B, 2C, snapshots e mudanças de membros não estão implementados.** `go test`
-sem filtro também executa etapas futuras e não é um critério de aprovação desta
-entrega 2A. Os testes completos foram preservados sem remoção ou alteração.
-
-Para conferir a integridade da base, se tiver Python disponível:
-
-```text
-python scripts/verificar_base.py
-```
-
-Os seis arquivos oficiais passaram nessa conferência durante a preparação.
-Ela não substitui compilar ou testar o Raft.
-
-## Antes de entregar
-
-1. Preencha nomes, matrículas e divisão real do trabalho no relatório.
-2. Execute 2A, repetições e `-race`; corrija eventuais falhas.
-3. Registre os resultados reais e complete os campos `FALTA COMPLETAR`.
-4. Revise dificuldades e lições para refletir a experiência do grupo.
-5. Entregue código e relatório pelo Classroom conforme o enunciado.
-
-O enunciado informa entrega em **19 de novembro**, grupos de até quatro pessoas
-e relatório com declaração das ferramentas de IA utilizadas.
-
-## Origem
-
-Foram usados os artigos fornecidos e a
-[base oficial indicada no enunciado](https://github.com/BU-CS451-DS/goals-2018),
-referência `720120c7f02a9ec1c1221d26c465b4ebc163f014`.
-A solução foi escrita para este projeto. Os arquivos oficiais preservados
-estão registrados com hashes em `docs/base-original.json`.
+Somente a parte 2A. `Start` mantém a assinatura do esqueleto e retorna índice `-1`, pois a replicação de comandos (2B) e a persistência (2C) não fazem parte desta entrega. Por isso, `go test` sem o filtro `-run 2A` falha nos testes 2B e 2C.
